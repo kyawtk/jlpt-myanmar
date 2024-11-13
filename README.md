@@ -1,4 +1,4 @@
-# Saungpokki Frontend V2
+# Next Template
 
 ## Tech Stack
 

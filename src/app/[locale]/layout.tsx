@@ -1,7 +1,6 @@
 import CustomNextIntlClientProvider from '#/components/providers/CustomNextIntlClientProvider';
 import ReactQueryProvider from '#/components/providers/ReactQueryProvider';
 import { ThemeProvider } from '#/components/providers/ThemeProvider';
-import { cn } from '#/lib/utils';
 import type { Metadata } from 'next';
 import React from 'react';
 import '../globals.css';
@@ -21,14 +20,9 @@ export default async function RootLayout({
   children: React.ReactNode;
   params: { locale: string };
 }>) {
-  const defaultFont: { [key: string]: string } = {
-    en: 'font-inter',
-    mm: 'font-noto-sans-myanmar',
-  };
-
   return (
     <html lang={locale}>
-      <body className={cn(defaultFont[locale], 'debug-screens')}>
+      <body className="debug-screens">
         <CustomNextIntlClientProvider>
           <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
             <ReactQueryProvider>

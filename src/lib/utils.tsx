@@ -1,3 +1,5 @@
+'use client';
+
 import { type ClassValue, clsx } from 'clsx';
 import moment from 'moment';
 import { twMerge } from 'tailwind-merge';
@@ -6,10 +8,18 @@ import { ApiErrorResponse } from '#/types/general';
 import { AxiosError } from 'axios';
 import { format, formatDistance } from 'date-fns';
 import { toast } from 'sonner';
+import {
+  generateUploadButton,
+  generateUploadDropzone,
+} from '@uploadthing/react';
+import { OurFileRouter } from '#/app/api/uploadthing/core';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
+
+export const UploadButton = generateUploadButton<OurFileRouter>();
+export const UploadDropzone = generateUploadDropzone<OurFileRouter>();
 
 export function capitalizeFirstLetter(string: string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
