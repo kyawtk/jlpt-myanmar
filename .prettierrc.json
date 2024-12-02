@@ -4,6 +4,13 @@
   "singleQuote": true,
   "jsxSingleQuote": false,
   "trailingComma": "all",
-  "plugins": ["prettier-plugin-tailwindcss"],
-  "endOfLine": "auto"
+  "plugins": ["prettier-plugin-tailwindcss", "sort-imports"],
+  "endOfLine": "auto",
+  "importOrder": [
+    "^(react/(.*)$)|^(react$)",
+    "",
+    "<THIRD_PARTY_MODULES>",
+    "",
+    "^[./]"
+  ]
 }
