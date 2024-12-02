@@ -1,6 +1,8 @@
+'use client';
 import { Button } from '#/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '#/components/ui/card';
 import { Link } from '#/navigation';
+import { signOut } from 'next-auth/react';
 import Head from 'next/head';
 
 export default function Home() {
@@ -20,7 +22,7 @@ export default function Home() {
             Ace the JLPT
           </h1>
           <p className="text-lg text-gray-600">
-            Practice with real-time mock exams and get ready to excel.
+            Practice with real-time japanese quizes and get ready to excel.
           </p>
         </header>
 
@@ -84,8 +86,18 @@ export default function Home() {
           <p className="mb-6 text-gray-600">
             Sign up now and get access to our complete JLPT mock test library.
           </p>
-          <Button className="rounded-lg bg-indigo-600 font-semibold shadow-md hover:bg-indigo-700">
-            <Link href={'/free-tests'}>Sign Up for Free</Link>
+          <Button variant={'default'} className="">
+            <Link href={'/free-tests'}>Tests</Link>
+          </Button>
+
+          <Button onClick={() => signOut()}>Logout</Button>
+          <Button>
+            {' '}
+            <Link href={'/chat'}>Chat room</Link>
+          </Button>
+          <Button>
+            {' '}
+            <Link href={'/admin'}>admin</Link>
           </Button>
         </section>
 

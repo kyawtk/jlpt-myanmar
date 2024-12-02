@@ -1,7 +1,15 @@
 {
   "root": true,
-  "extends": ["eslint:recommended", "plugin:prettier/recommended", "next"],
-  "plugins": ["prettier", "unused-imports"],
+  "extends": [
+    "eslint:recommended",
+    "plugin:prettier/recommended",
+    "next",
+    "plugin:storybook/recommended"
+  ],
+  "plugins": [
+    "prettier",
+    "unused-imports"
+  ],
   "rules": {
     "prettier/prettier": [
       "error",

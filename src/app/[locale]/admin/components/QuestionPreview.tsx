@@ -58,7 +58,7 @@ const QuestionPreview: React.FC<QuestionPreviewProps> = ({ questionData }) => {
         </div>
       )}
 
-      <div>
+      {/* <div>
         <h3 className="font-semibold text-gray-700">Options:</h3>
         <ul className="mt-2 space-y-2">
           {options.map((option, index) => (
@@ -74,7 +74,7 @@ const QuestionPreview: React.FC<QuestionPreviewProps> = ({ questionData }) => {
             </li>
           ))}
         </ul>
-      </div>
+      </div> */}
     </div>
   );
 };

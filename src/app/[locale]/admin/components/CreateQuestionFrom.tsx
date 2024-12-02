@@ -14,22 +14,25 @@ import { RadioGroup, RadioGroupItem } from '#/components/ui/radio-group';
 import { Textarea } from '#/components/ui/textarea';
 import { UploadButton } from '#/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { DeleteIcon, PlusIcon } from 'lucide-react';
+import { DeleteIcon } from 'lucide-react';
 import Image from 'next/image';
-import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
+import { SubmitHandler, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import QuestionPreview from './QuestionPreview';
+import UploadPassage from './UploadPassage';
 
+const levels = ['N5', 'N4', 'N3', 'N2'];
 // Define the Zod schema for validation
 const questionSchema = z.object({
   content: z
     .string()
     .min(5, { message: 'Content must be at least 5 characters.' }),
   type: z.enum(['vocabulary', 'grammar', 'reading', 'listening']),
-  passage: z.string().optional(),
+  passageId: z.number().optional(),
   audioUrl: z.string().optional(),
   imageUrl: z.string().optional(),
   correctOptionIndex: z.number(),
+  level: z.enum(['N5', 'N4', 'N3', 'N2']),
   options: z
     .array(z.string())
     .min(3, { message: 'Please provide at least two options.' }),
@@ -47,9 +50,10 @@ function QuestionForm({ onSubmit }: QuestionFormProps) {
   const form = useForm<QuestionFormData>({
     resolver: zodResolver(questionSchema),
     defaultValues: {
+      level: 'N5',
       content: '',
       type: 'vocabulary',
-      passage: '',
+      passageId: 0,
       audioUrl: '',
       imageUrl: '',
       correctOptionIndex: 0,
@@ -60,13 +64,14 @@ function QuestionForm({ onSubmit }: QuestionFormProps) {
   // Manage form submit
   const handleFormSubmit = (data: QuestionFormData) => {
     onSubmit(data);
+
     form.reset({
       content: '',
-      type: 'vocabulary',
-      passage: '',
+      ...(data.passageId ? { passageId: data.passageId } : {}),
       audioUrl: '',
       imageUrl: '',
       correctOptionIndex: 0,
+        
       options: ['', '', '', ''],
     });
   };
@@ -79,8 +84,38 @@ function QuestionForm({ onSubmit }: QuestionFormProps) {
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(handleFormSubmit)}
-          className="space-y-4 p-4 "
+          className="flex w-1/2 flex-wrap gap-4"
         >
+          {/* Level */}
+          <FormField
+            control={form.control}
+            name="level"
+            render={({ field }) => (
+              <FormItem className="space-y-3">
+                <FormLabel>Level</FormLabel>
+                <FormControl>
+                  <RadioGroup
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                    className="flex gap-3 space-y-1"
+                  >
+                    {levels.map((level) => (
+                      <FormItem
+                        key={level}
+                        className="flex items-center gap-2 space-y-0"
+                      >
+                        <FormControl>
+                          <RadioGroupItem value={level} />
+                        </FormControl>
+                        <FormLabel className="font-normal">{level}</FormLabel>
+                      </FormItem>
+                    ))}
+                  </RadioGroup>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
           {/* Type */}
           <FormField
             control={form.control}
@@ -142,19 +177,23 @@ function QuestionForm({ onSubmit }: QuestionFormProps) {
           {/* Passage */}
           <FormField
             control={form.control}
-            name="passage"
+            name="passageId"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Passage</FormLabel>
+                <FormLabel>PassageId</FormLabel>
                 <FormControl>
-                  <Textarea placeholder="Enter passage (optional)" {...field} />
+                  <Textarea
+                    placeholder="Enter passage Id (optional)"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
+
           {/* Audio URL */}
-          <FormField
+          {/* <FormField
             control={form.control}
             name="audioUrl"
             render={({ field }) => (
@@ -166,7 +205,33 @@ function QuestionForm({ onSubmit }: QuestionFormProps) {
                 <FormMessage />
               </FormItem>
             )}
+          /> */}
+
+          <UploadButton
+            endpoint="audioUploader"
+            onClientUploadComplete={(res) => {
+              // Assuming 'res' is an array and the first file's URL is what you need.
+              if (res && res.length > 0) {
+                const uploadedAudio = res[0].url; // Adjust if your response format differs.
+                form.setValue('audioUrl', uploadedAudio); // Set the imageUrl in the form.
+              }
+            }}
+            onUploadError={(error: Error) => {
+              alert(`ERROR! ${error.message}`);
+            }}
           />
+          {form.watch('audioUrl') && (
+            <div className="flex justify-center">
+              <audio src={form.watch('audioUrl') || ''} controls />
+
+              <Button
+                className="ml-2"
+                onClick={() => form.setValue('audioUrl', '')}
+              >
+                <DeleteIcon className="h-5 w-5" />
+              </Button>
+            </div>
+          )}
           <UploadButton
             endpoint="imageUploader"
             onClientUploadComplete={(res) => {
@@ -240,6 +305,9 @@ function QuestionForm({ onSubmit }: QuestionFormProps) {
         </form>
       </Form>
       {/* Preview Component */}
+      <UploadPassage
+        onSuccess={(data) => form.setValue('passageId', data.id)}
+      />
       <QuestionPreview questionData={formData} />
     </div>
   );

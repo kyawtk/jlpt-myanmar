@@ -4,14 +4,19 @@ import { ThemeProvider } from '#/components/providers/ThemeProvider';
 import type { Metadata } from 'next';
 import React from 'react';
 import '../globals.css';
-
+import { Montserrat } from 'next/font/google';
 import NextTopLoader from 'nextjs-toploader';
 import { Toaster } from 'sonner';
+import Backbutton from './admin/components/Backbutton';
+import SessionProvider from '../sessionProvider';
+import { options } from '../api/auth/[...nextauth]/options';
+import { getServerSession } from 'next-auth';
 
 export const metadata: Metadata = {
-  title: 'Next Template',
-  description: 'Next Template',
+  title: 'JLPT Quizzes',
+  description: 'Practice Japanese Language with JLPT Quizzes',
 };
+const monserrat = Montserrat({ subsets: ['latin'] });
 
 export default async function RootLayout({
   children,
@@ -20,17 +25,23 @@ export default async function RootLayout({
   children: React.ReactNode;
   params: { locale: string };
 }>) {
+  const session = await getServerSession(options);
   return (
-    <html lang={locale}>
-      <body className="debug-screens">
+    <html lang={locale} className={monserrat.className}>
+      <body>
         <CustomNextIntlClientProvider>
-          <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
-            <ReactQueryProvider>
-              <Toaster richColors duration={3000} />
-              <NextTopLoader />
-              {children}
-            </ReactQueryProvider>
-          </ThemeProvider>
+          <SessionProvider session={session}>
+            <ThemeProvider attribute="class" defaultTheme="light">
+              <ReactQueryProvider>
+                <Toaster richColors duration={3000} />
+                <NextTopLoader color="indigo" />
+                <div className="relative">
+                  {children}
+                  <Backbutton />
+                </div>
+              </ReactQueryProvider>
+            </ThemeProvider>
+          </SessionProvider>
         </CustomNextIntlClientProvider>
       </body>
     </html>
